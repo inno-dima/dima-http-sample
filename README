@@ -1,7 +1,10 @@
-* you can use internet resources
-* you can only use java default libraries (junit being the exception)
+You have to:
 * refactor the code using your own style to make it as _simple_ and _maintable_ as possible
 * test with automated tests
 * add a configuration file for the static content path and the listening port
 * add gzip compression support
 * add dynamically generate directory view (similar to the classic apache folder view: https://www.apache.org/dist/ )
+
+To complete the project, you can 
+* use internet resources
+* use java default libraries only (junit being the exception)
