@@ -1,4 +1,4 @@
-<project name="SimpleHTTPServer" default="dist" basedir=".">
+<project name="src.main.java.com.zextras.httpserver.ServerApplication" default="dist" basedir=".">
     <description>
         Simple HTTP Server for static files
     </description>
@@ -25,7 +25,7 @@
     <mkdir dir="${dist}"/>
     <jar jarfile="${dist}/SimpleHTTPServer.jar" basedir="${build}">
       <manifest>
-         <attribute name="Main-Class" value="SimpleHTTPServer"/>
+         <attribute name="Main-Class" value="src.main.java.com.zextras.httpserver.ServerApplication"/>
       </manifest>
     </jar>
   </target>

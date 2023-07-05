@@ -1,3 +1,5 @@
+package src.test.java;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -5,14 +7,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import static org.junit.Assert.*;
+import src.main.java.com.zextras.httpserver.ServerApplication;
 
 public class SimpleHTTPServerTest {
 
-    static SimpleHTTPServer simpleHTTPServer;
+    static ServerApplication serverApplication;
 
     @BeforeClass
     public static void setup() throws Exception {
-        simpleHTTPServer = new SimpleHTTPServer();
+        serverApplication = new ServerApplication();
     }
 
     @Test
