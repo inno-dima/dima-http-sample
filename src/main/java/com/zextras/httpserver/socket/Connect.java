@@ -1,68 +1,38 @@
 package src.main.java.com.zextras.httpserver.socket;
 
-import src.main.java.com.zextras.httpserver.http.HttpRequest;
-import src.main.java.com.zextras.httpserver.http.HttpResponse;
+import src.main.java.com.zextras.httpserver.exception.InternalServerException;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.logging.Logger;
 
-public class Connect extends Thread {
-    Socket client;
-    BufferedReader in = null;
-    PrintWriter out = null;
-    private static final Logger log = Logger.getLogger("com.zextras.httpserver.SimpleHTTPServer");
-
-    public Connect() {
-    }
+public class Connect implements AutoCloseable {
+    private final InputStream in;
+    private final OutputStream out;
+    private final Socket socket;
 
     public Connect(Socket clientSocket) {
-        client = clientSocket;
         try {
-            in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            out = new PrintWriter(client.getOutputStream());
-        } catch (Exception e1) {
-            try {
-                client.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return;
+            this.in = clientSocket.getInputStream();
+            this.out = clientSocket.getOutputStream();
+            this.socket = clientSocket;
+        } catch (IOException e) {
+            throw new InternalServerException(e);
         }
-        this.start();
     }
 
-    public void run() {
-        try {
-            String line;
-      ArrayList<String> data = new ArrayList<>();
+    public InputStream getIn() {
+        return in;
+    }
 
-            while ((line = in.readLine()) != null && (!(line.equals("")))) {
-                data.add(line);
-            }
+    public OutputStream getOut() {
+        return out;
+    }
 
-            HttpRequest req;
-            HttpResponse res;
-            try {
-                req = HttpRequest.parse(data);
-                res = req.process();
-                out.write(res.getContent());
-                out.flush();
-            } catch (Exception e1) {
-                client.close();
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                client.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+    public void close() throws IOException {
+        this.in.close();
+        this.out.close();
+        this.socket.close();
     }
 }

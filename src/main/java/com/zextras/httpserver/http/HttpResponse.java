@@ -1,46 +1,53 @@
 package src.main.java.com.zextras.httpserver.http;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class HttpResponse {
-    private HttpResponseStatus httpResponseStatus;
-    private final List<String> headers;
     private byte[] content;
+    private HttpResponseStatus status;
+    private Map<String, String> headers;
 
     public HttpResponse() {
-        this.httpResponseStatus = HttpResponseStatus.OK;
-        this.headers = new ArrayList<>();
+        this.status = HttpResponseStatus.OK;
+        this.headers = new LinkedHashMap<>();
         this.content = new byte[0];
     }
 
-    public void setStatus(HttpResponseStatus s) {
-        this.httpResponseStatus = s;
+    public HttpResponse(HttpResponseStatus status) {
+        this.status = status;
+        this.headers = new LinkedHashMap<>();
+        this.content = new byte[0];
+    }
+
+    public HttpResponse(HttpResponseStatus status, Map<String, String> headers, byte[] content) {
+        this.status = status;
+        this.headers = headers;
+        this.content = content;
+    }
+
+    public byte[] getContent() {
+        return content;
     }
 
     public void setContent(byte[] content) {
         this.content = content;
     }
 
-    public String getContent() {
-        String data = "";
-
-        data += httpResponseStatus.toString();
-
-        for (String h : this.headers) {
-            data += h + "\r\n";
-        }
-        data += "\r\n" + new String(this.content);
-
-        return data;
+    public HttpResponseStatus getStatus() {
+        return status;
     }
 
-    public void setHeader(String hName, String hValue) {
-        this.headers.add(hName + ":" + hValue);
+    public void setStatus(HttpResponseStatus s) {
+        this.status = s;
     }
 
-    public void setHeader(String hName, int hValue) {
-        this.headers.add(hName + ":" + hValue);
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
     }
 
 }

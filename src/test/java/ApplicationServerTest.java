@@ -2,20 +2,20 @@ package src.test.java;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import src.main.java.com.zextras.httpserver.config.ServerConfig;
+import src.main.java.com.zextras.httpserver.socket.ServerSocketListener;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import static org.junit.Assert.*;
-import src.main.java.com.zextras.httpserver.ServerApplication;
+import static org.junit.Assert.assertEquals;
 
-public class SimpleHTTPServerTest {
-
-    static ServerApplication serverApplication;
+public class ApplicationServerTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        serverApplication = new ServerApplication();
+        ServerSocketListener server = new ServerSocketListener(new ServerConfig());
+        server.runAsync();
     }
 
     @Test
@@ -31,7 +31,7 @@ public class SimpleHTTPServerTest {
         URL url = new URL("http://localhost:3000/");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.connect();
-        assertEquals(106496, connection.getContentLength());
+        assertEquals(106403, connection.getContentLength());
     }
 
     @Test

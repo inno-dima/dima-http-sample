@@ -1,36 +1,19 @@
 package src.main.java.com.zextras.httpserver;
 
 import src.main.java.com.zextras.httpserver.config.ServerConfig;
-import src.main.java.com.zextras.httpserver.socket.Connect;
+import src.main.java.com.zextras.httpserver.socket.ServerSocketListener;
 
-import java.net.*;
-import java.util.logging.*;
+import java.util.logging.Logger;
 
-public class ServerApplication extends Thread {
-  private final ServerSocket server;
-  private static Logger log = Logger.getLogger("com.zextras.httpserver.SimpleHTTPServer");
+public class ServerApplication {
+    private static Logger log = Logger.getLogger("com.zextras.httpserver.ServerApplication");
 
-  public static void main(String argv[]) throws Exception {
-    log.info("**** Simple HTTP Server starts... ****");
-    new ServerApplication();
-  }
-
-  public ServerApplication() throws Exception {
-    server = new ServerSocket(ServerConfig.PORT);
-    log.info("Server listening on port: " + ServerConfig.PORT);
-    this.start();
-  }
-
-  @Override
-  public void run() {
-    log.info("Waiting for connections.");
-    while(true) {
-      try {
-        Socket client = server.accept();
-        log.info("Connection from " + client.getInetAddress());
-        new Connect(client);
-      } catch(Exception ignored) {}
+    public static void main(String[] args) throws Exception {
+        ServerConfig config = new ServerConfig();
+        log.info("**** Simple HTTP Server starts... ****");
+        log.info("Server listening on port: " + config.getPort());
+        new ServerSocketListener(config).run();
     }
-  }
+
 }
 
