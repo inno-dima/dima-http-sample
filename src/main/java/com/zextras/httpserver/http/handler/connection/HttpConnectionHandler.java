@@ -21,12 +21,12 @@ public class HttpConnectionHandler {
 
 
     public void handleConnection(Connect connect) {
-        try  {
-            HttpRequest request = parseRequest(connect);
+        HttpRequest request = parseRequest(connect);
+        try {
             HttpRequestHandler handler = requestHandlerFactory.getSuitableHandler(request);
             HttpHandlerUtils.write(handler.handleRequest(request), connect.getOut());
         } catch (Exception e) {
-            HttpHandlerUtils.write(requestExceptionHandlerFactory.getSuitableHandler(e).handleException(e), connect.getOut());
+            HttpHandlerUtils.write(requestExceptionHandlerFactory.getSuitableHandler(e).handleException(request, e), connect.getOut());
         }
     }
 
