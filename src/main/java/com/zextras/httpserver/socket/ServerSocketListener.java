@@ -54,7 +54,8 @@ public class ServerSocketListener {
                 Socket clientSocket = socket.accept();
                 log.info("Connection from " + clientSocket.getInetAddress());
 
-                executor.submit(() -> HttpConnectionHandlerFactory.getHttpConnectionHandler().handleConnection(new Connect(clientSocket)));
+                executor.submit(() -> HttpConnectionHandlerFactory.getHttpConnectionHandler()
+                        .handleConnection(new Connect(clientSocket)));
             } catch (IOException e) {
                 executor.shutdown();
                 throw new InternalServerException("Unexpected problem during Socket listening", e);
