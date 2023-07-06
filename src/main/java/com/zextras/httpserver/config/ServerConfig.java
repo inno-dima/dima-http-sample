@@ -1,15 +1,26 @@
 package src.main.java.com.zextras.httpserver.config;
 
 public class ServerConfig {
-    public static String sitePath = "html";
-    public static String serverName = "com.zextras.httpserver.SimpleHTTPServer 0.0.1";
-    public static int PORT = 3000;
+    private final String serverRootPath;
+    private final int port;
+    private final int threadCount;
 
-    public int getPort(){
-        return PORT;
+    public ServerConfig(String serverRootPath, int port, int threadCount) {
+        this.serverRootPath = serverRootPath;
+        this.port = port;
+        this.threadCount = threadCount;
     }
 
-    public int getThreadCount(){return 10;}
 
-    public String getSitePath(){return sitePath;}
+    public int getPort() {
+        return port;
+    }
+
+    public int getThreadCount() {
+        return threadCount;
+    }
+
+    public String getServerRootPath() {
+        return serverRootPath;
+    }
 }

@@ -3,7 +3,6 @@ package src.main.java.com.zextras.httpserver.socket;
 import src.main.java.com.zextras.httpserver.config.ServerConfig;
 import src.main.java.com.zextras.httpserver.exception.InternalServerException;
 import src.main.java.com.zextras.httpserver.http.handler.connection.HttpConnectionHandlerFactory;
-import src.main.java.com.zextras.httpserver.socket.Connect;
 
 import java.io.IOException;
 import java.net.ServerSocket;

@@ -1,6 +1,7 @@
 package src.main.java.com.zextras.httpserver.http.handler.request.impl.index;
 
 import src.main.java.com.zextras.httpserver.config.ServerConfig;
+import src.main.java.com.zextras.httpserver.config.ServerConfigManager;
 import src.main.java.com.zextras.httpserver.exception.InternalServerException;
 
 import java.io.IOException;
@@ -12,12 +13,12 @@ public class IndexHandlerService {
     private final ServerConfig serverConfig;
 
     public IndexHandlerService() {
-        this.serverConfig = new ServerConfig();
+        this.serverConfig = ServerConfigManager.getInstance().getCurrentConfiguration();
     }
 
     public byte[] readFileContent() {
         try {
-            return Files.readAllBytes(Paths.get(serverConfig.getSitePath() + "/index.html"));
+            return Files.readAllBytes(Paths.get(serverConfig.getServerRootPath() + "/index.html"));
         } catch (IOException e) {
             throw new InternalServerException(e);
         }

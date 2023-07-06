@@ -3,6 +3,7 @@ package src.test.java;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import src.main.java.com.zextras.httpserver.config.ServerConfig;
+import src.main.java.com.zextras.httpserver.config.ServerConfigManager;
 import src.main.java.com.zextras.httpserver.socket.ServerSocketListener;
 
 import java.net.HttpURLConnection;
@@ -14,7 +15,9 @@ public class ApplicationServerTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        ServerSocketListener server = new ServerSocketListener(new ServerConfig());
+        ServerConfigManager.getInstance().initConfiguration("src/test/resources/server.properties");
+        ServerConfig serverConfig = ServerConfigManager.getInstance().getCurrentConfiguration();
+        ServerSocketListener server = new ServerSocketListener(serverConfig);
         server.runAsync();
     }
 
