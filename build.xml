@@ -1,7 +1,7 @@
-<project name="src.main.java.com.zextras.httpserver.ServerApplication" default="dist" basedir=".">
-    <description>
-        Simple HTTP Server for static files
-    </description>
+<project name="ApplicationServer" default="dist" basedir=".">
+  <description>
+    Simple HTTP Server for static files
+  </description>
   <!-- set global properties for this build -->
   <property name="src" location="."/>
   <property name="build" location="build"/>
@@ -25,13 +25,13 @@
     <mkdir dir="${dist}"/>
     <jar jarfile="${dist}/SimpleHTTPServer.jar" basedir="${build}">
       <manifest>
-         <attribute name="Main-Class" value="src.main.java.com.zextras.httpserver.ServerApplication"/>
+        <attribute name="Main-Class" value="ApplicationServer"/>
       </manifest>
     </jar>
   </target>
 
   <target name="clean"
-        description="clean up" >
+          description="clean up" >
     <!-- Delete the ${build} and ${dist} directory trees -->
     <delete dir="${build}"/>
     <delete dir="${dist}"/>
