@@ -76,7 +76,7 @@ public class FileHandlingService {
 
     private boolean isFileReadable(Path path) {
         try {
-            return (Files.isReadable(path) && path.startsWith(root)) && !(Files.isHidden(path) || Files.isSymbolicLink(path));
+            return (Files.isReadable(path) && (path.startsWith(root) || path.equals(root))) && !(Files.isHidden(path) || Files.isSymbolicLink(path));
         } catch (Exception e) {
             return false;
         }
@@ -104,7 +104,7 @@ public class FileHandlingService {
     private void addParentDir(Path path, StringBuilder sb) {
         Path parent = path.getParent();
         if (isFileReadable(parent)) {
-            sb.append(String.format(FileHttpPageContent.HREF, parent.toString(), "Prev dir"));
+            sb.append(String.format(FileHttpPageContent.HREF, parent.toString(), "Parent Dir"));
         }
     }
 
