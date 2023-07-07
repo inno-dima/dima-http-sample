@@ -20,6 +20,6 @@ public class HttpRequestHandlerFactory {
         return handler;
       }
     }
-    throw new NotFoundException();
+    throw new NotFoundException("Cannot process uri: " + request.getUri());
   }
 }
