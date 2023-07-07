@@ -24,4 +24,17 @@ public class HttpRequest {
   public HttpMethod getMethod() {
     return method;
   }
+
+  @Override
+  public String toString() {
+    return "HttpRequest{"
+        + "uri='"
+        + uri
+        + '\''
+        + ", method="
+        + method
+        + ", headers="
+        + headers
+        + '}';
+  }
 }

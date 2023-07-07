@@ -1,6 +1,7 @@
 package src.main.java.com.zextras.httpserver.http.handler.connection;
 
 import java.io.IOException;
+import java.util.Map;
 import src.main.java.com.zextras.httpserver.exception.BadRequestException;
 import src.main.java.com.zextras.httpserver.http.HeaderConstants;
 import src.main.java.com.zextras.httpserver.http.HttpRequest;
@@ -9,7 +10,7 @@ import src.main.java.com.zextras.httpserver.http.handler.connection.compression.
 import src.main.java.com.zextras.httpserver.http.handler.exception.HttpExceptionHandlerFactory;
 import src.main.java.com.zextras.httpserver.http.handler.request.HttpRequestHandler;
 import src.main.java.com.zextras.httpserver.http.handler.request.HttpRequestHandlerFactory;
-import src.main.java.com.zextras.httpserver.socket.Connect;
+import src.main.java.com.zextras.httpserver.socket.ConnectionRequest;
 
 public class HttpConnectionHandler {
 
@@ -26,31 +27,32 @@ public class HttpConnectionHandler {
     this.contentCompressorFactory = contentCompressorFactory;
   }
 
-  public void handleConnection(Connect connect) {
-    HttpRequest request = parseRequest(connect);
+  public void processConnection(ConnectionRequest connectionRequest) {
+    HttpRequest request = parseRequest(connectionRequest);
     try {
       HttpRequestHandler handler = requestHandlerFactory.getSuitableHandler(request);
-      HttpResponse response = compressResponse(handler.handleRequest(request), request);
-      HttpHandlerUtils.write(response, connect.getOut());
+      HttpResponse response = handler.handleRequest(request);
+      HttpResponse compressedResponse = compressResponse(response, request.getHeaders());
+      HttpHandlerUtils.write(compressedResponse, connectionRequest.getOut());
     } catch (Exception e) {
       HttpHandlerUtils.write(
           requestExceptionHandlerFactory.getSuitableHandler(e).handleException(request, e),
-          connect.getOut());
+          connectionRequest.getOut());
     }
   }
 
-  private HttpResponse compressResponse(HttpResponse response, HttpRequest request) {
-    if (request.getHeaders().containsKey(HeaderConstants.ACCEPT_ENCODING_HEADER)) {
+  private HttpResponse compressResponse(HttpResponse response, Map<String, String> headers) {
+    if (headers.containsKey(HeaderConstants.ACCEPT_ENCODING_HEADER)) {
       return contentCompressorFactory
-          .getCompressor(request.getHeaders().get(HeaderConstants.ACCEPT_ENCODING_HEADER))
+          .getCompressor(headers.get(HeaderConstants.ACCEPT_ENCODING_HEADER))
           .compressContent(response);
     }
     return response;
   }
 
-  private HttpRequest parseRequest(Connect connect) {
+  private HttpRequest parseRequest(ConnectionRequest connectionRequest) {
     try {
-      return HttpHandlerUtils.parseRequest(connect.getIn());
+      return HttpHandlerUtils.parseRequest(connectionRequest.getIn());
     } catch (IOException e) {
       throw new BadRequestException(e);
     }

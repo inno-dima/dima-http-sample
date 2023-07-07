@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 import java.util.Map;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
-import src.main.java.com.zextras.httpserver.config.ServerConfigManager;
+import src.main.java.com.zextras.httpserver.config.ServerConfigFactory;
 import src.main.java.com.zextras.httpserver.exception.BadRequestException;
 import src.main.java.com.zextras.httpserver.exception.InternalServerException;
 import src.main.java.com.zextras.httpserver.exception.NotFoundException;
@@ -21,16 +21,17 @@ import src.main.java.com.zextras.httpserver.http.handler.request.util.RequestUri
 public class FileHandlingService {
   private static final UnaryOperator<String> MIME_TABLE =
       URLConnection.getFileNameMap()::getContentTypeFor;
+  private static final String PATH_PARAMETER = "path";
 
   private final Path root;
 
   public FileHandlingService() {
     this.root =
-        Paths.get(ServerConfigManager.getInstance().getCurrentConfiguration().getServerRootPath());
+        Paths.get(ServerConfigFactory.getInstance().getCurrentConfiguration().getServerRootPath());
   }
 
   public HttpResponse handleRequest(String uri) {
-    String pathString = RequestUriUtil.parseHttpParams(uri).get("path");
+    String pathString = RequestUriUtil.parseHttpParams(uri).get(PATH_PARAMETER);
     if (pathString != null) {
       return prepareResponse(uri, pathString);
     }
@@ -40,12 +41,12 @@ public class FileHandlingService {
   private HttpResponse prepareResponse(String uri, String pathString) {
     Path path = getPath(pathString);
     if (path.toFile().isFile()) {
-      return serveFile(path);
+      return getFileContentResponse(path);
     }
-    return listFiles(uri, path);
+    return getDirectoryResponse(uri, path);
   }
 
-  private HttpResponse serveFile(Path path) {
+  private HttpResponse getFileContentResponse(Path path) {
     HttpResponse httpResponse = new HttpResponse();
     Map<String, String> headers = httpResponse.getHeaders();
     headers.put(HeaderConstants.CONTENT_TYPE_HEADER, mediaType(path.toString()));
@@ -56,7 +57,7 @@ public class FileHandlingService {
     return httpResponse;
   }
 
-  private HttpResponse listFiles(String uri, Path path) {
+  private HttpResponse getDirectoryResponse(String uri, Path path) {
     HttpResponse httpResponse = new HttpResponse();
     Map<String, String> headers = httpResponse.getHeaders();
     headers.put(HeaderConstants.CONTENT_TYPE_HEADER, HeaderConstants.HTML_CONTENT_TYPE);

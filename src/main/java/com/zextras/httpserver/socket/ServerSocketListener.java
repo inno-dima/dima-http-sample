@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import src.main.java.com.zextras.httpserver.config.ServerConfig;
 import src.main.java.com.zextras.httpserver.exception.InternalServerException;
+import src.main.java.com.zextras.httpserver.http.handler.connection.HttpConnectionHandler;
 import src.main.java.com.zextras.httpserver.http.handler.connection.HttpConnectionHandlerFactory;
 
 public class ServerSocketListener {
@@ -26,11 +27,18 @@ public class ServerSocketListener {
     this.serverConfig = serverConfig;
   }
 
-  public void run() {
+  private static void processNewConnection(Socket clientSocket) {
+    HttpConnectionHandler handler =
+        HttpConnectionHandlerFactory.getHttpConnectionHandler();
+    ConnectionRequest connectionRequest = new ConnectionRequest(clientSocket);
+    handler.processConnection(connectionRequest);
+  }
+
+  public void start() {
     startListening();
   }
 
-  public void runAsync() throws InterruptedException {
+  public void startAsync() throws InterruptedException {
     CompletableFuture.supplyAsync(
         () -> {
           startListening();
@@ -53,11 +61,8 @@ public class ServerSocketListener {
       try {
         Socket clientSocket = socket.accept();
         log.info("Connection from " + clientSocket.getInetAddress());
-
         executor.submit(
-            () ->
-                HttpConnectionHandlerFactory.getHttpConnectionHandler()
-                    .handleConnection(new Connect(clientSocket)));
+            () -> processNewConnection(clientSocket));
       } catch (IOException e) {
         executor.shutdown();
         throw new InternalServerException("Unexpected problem during Socket listening", e);
@@ -79,22 +84,20 @@ public class ServerSocketListener {
   }
 
   private void initShutdownHook(ServerSocket serverSocket) {
-    Runtime.getRuntime()
-        .addShutdownHook(
-            new Thread(
-                () -> {
-                  try {
-                    log.info("Shutting down HTTP Server...");
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> processShutdown(serverSocket)));
+  }
 
-                    if (!serverSocket.isClosed()) {
-                      serverSocket.close();
-                    }
-                    this.executor.shutdown();
-                  } catch (IOException e) {
-                    log.warning("Error on shutting down.");
+  private void processShutdown(ServerSocket serverSocket) {
+    try {
+      log.info("Shutting down HTTP Server...");
 
-                    System.exit(1);
-                  }
-                }));
+      if (!serverSocket.isClosed()) {
+        serverSocket.close();
+      }
+      this.executor.shutdown();
+    } catch (IOException e) {
+      log.warning("Error on shutting down.");
+      System.exit(1);
+    }
   }
 }

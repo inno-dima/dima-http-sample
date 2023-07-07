@@ -15,11 +15,9 @@ public class HttpRequestHandlerFactory {
   }
 
   public HttpRequestHandler getSuitableHandler(HttpRequest request) {
-    for (HttpRequestHandler handler : handlersAvailable) {
-      if (handler.isRequestSupported(request)) {
-        return handler;
-      }
-    }
-    throw new NotFoundException("Cannot process uri: " + request.getUri());
+    return handlersAvailable.stream()
+        .filter(handler -> handler.isRequestSupported(request))
+        .findFirst()
+        .orElseThrow(() -> new NotFoundException("Cannot process request: " + request.toString()));
   }
 }

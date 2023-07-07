@@ -6,12 +6,12 @@ import java.io.OutputStream;
 import java.net.Socket;
 import src.main.java.com.zextras.httpserver.exception.InternalServerException;
 
-public class Connect implements AutoCloseable {
+public class ConnectionRequest implements AutoCloseable {
   private final InputStream in;
   private final OutputStream out;
   private final Socket socket;
 
-  public Connect(Socket clientSocket) {
+  public ConnectionRequest(Socket clientSocket) {
     try {
       this.in = clientSocket.getInputStream();
       this.out = clientSocket.getOutputStream();
@@ -29,6 +29,7 @@ public class Connect implements AutoCloseable {
     return out;
   }
 
+  @Override
   public void close() throws IOException {
     this.in.close();
     this.out.close();

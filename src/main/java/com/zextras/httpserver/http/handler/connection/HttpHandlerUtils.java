@@ -19,13 +19,16 @@ import src.main.java.com.zextras.httpserver.http.HttpResponse;
 
 public class HttpHandlerUtils {
 
+  private static final String HTTP_REGEX = "(\\A[A-Z]+) +(.+) +HTTP/1.\\d";
+  private static final String COLON = ":";
+
   private HttpHandlerUtils() {
     throw new UnsupportedOperationException();
   }
 
   public static HttpRequest parseRequest(InputStream inputStream) throws IOException {
     List<String> data = readInputStream(inputStream);
-    Pattern pattern = Pattern.compile("(\\A[A-Z]+) +(.+) +HTTP/1.\\d");
+    Pattern pattern = Pattern.compile(HTTP_REGEX);
     Matcher matcher = pattern.matcher(data.remove(0));
     Map<String, String> headers = parseHeaders(data);
     if (matcher.matches()) {
@@ -54,7 +57,7 @@ public class HttpHandlerUtils {
   private static Map<String, String> parseHeaders(List<String> headers) {
     Map<String, String> data = new HashMap<>();
     for (String h : headers) {
-      String[] s = h.split(":", 2);
+      String[] s = h.split(COLON, 2);
       data.put(s[0].trim().toLowerCase(), s[1].trim().toLowerCase());
     }
     return data;
@@ -62,7 +65,7 @@ public class HttpHandlerUtils {
 
   private static void writeHeaders(HttpResponse response, StringBuilder httpHeaders) {
     for (Map.Entry<String, String> header : response.getHeaders().entrySet()) {
-      String h = header.getKey() + ": " + header.getValue();
+      String h = header.getKey() + COLON + header.getValue();
       httpHeaders.append(h).append("\r\n");
     }
   }

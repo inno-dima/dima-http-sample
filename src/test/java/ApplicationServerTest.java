@@ -12,19 +12,20 @@ import java.util.Objects;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import src.main.java.com.zextras.httpserver.config.ServerConfig;
-import src.main.java.com.zextras.httpserver.config.ServerConfigManager;
+import src.main.java.com.zextras.httpserver.config.ServerConfigFactory;
 import src.main.java.com.zextras.httpserver.socket.ServerSocketListener;
 
 public class ApplicationServerTest {
-  
+
   private static final String SERVER_URL = "http://localhost:3000";
 
   @BeforeClass
   public static void setup() throws Exception {
-    ServerConfigManager.getInstance().initConfiguration("src/test/resources/server.properties");
-    ServerConfig serverConfig = ServerConfigManager.getInstance().getCurrentConfiguration();
+    ServerConfig serverConfig =
+        ServerConfigFactory.getInstance("src/test/resources/server.properties")
+            .getCurrentConfiguration();
     ServerSocketListener server = new ServerSocketListener(serverConfig);
-    server.runAsync();
+    server.startAsync();
   }
 
   @Test
@@ -70,8 +71,7 @@ public class ApplicationServerTest {
 
   @Test
   public void file_get_return_200_OK() throws IOException {
-    URL url =
-        new URL(SERVER_URL + "/file?path=src/test/resources/files/parent/dir/file.txt");
+    URL url = new URL(SERVER_URL + "/file?path=src/test/resources/files/parent/dir/file.txt");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.connect();
     assertEquals(HttpURLConnection.HTTP_OK, connection.getResponseCode());
@@ -79,8 +79,7 @@ public class ApplicationServerTest {
 
   @Test
   public void file_content_same_as_file() throws Exception {
-    URL url =
-        new URL(SERVER_URL + "/file?path=src/test/resources/files/parent/dir/file.txt");
+    URL url = new URL(SERVER_URL + "/file?path=src/test/resources/files/parent/dir/file.txt");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.connect();
     byte[] expected =
@@ -94,8 +93,7 @@ public class ApplicationServerTest {
 
   @Test
   public void file_big_content_same_as_file() throws Exception {
-    URL url =
-        new URL(SERVER_URL + "/file?path=src/test/resources/files/parent/dir/large.pdf");
+    URL url = new URL(SERVER_URL + "/file?path=src/test/resources/files/parent/dir/large.pdf");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.connect();
     byte[] expected =
@@ -137,9 +135,12 @@ public class ApplicationServerTest {
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.connect();
     String content = new String(readAllBytes(connection.getInputStream()));
-    assertTrue(content.contains(Paths.get("src/test/resources/files/parent/dir/file.txt").toString()));
-    assertTrue(content.contains(Paths.get("src/test/resources/files/parent/dir/image.jpeg").toString()));
-    assertTrue(content.contains(Paths.get("src/test/resources/files/parent/dir/large.pdf").toString()));
+    assertTrue(
+        content.contains(Paths.get("src/test/resources/files/parent/dir/file.txt").toString()));
+    assertTrue(
+        content.contains(Paths.get("src/test/resources/files/parent/dir/image.jpeg").toString()));
+    assertTrue(
+        content.contains(Paths.get("src/test/resources/files/parent/dir/large.pdf").toString()));
     assertTrue(content.contains("Parent Dir"));
     assertEquals(HttpURLConnection.HTTP_OK, connection.getResponseCode());
   }
@@ -157,8 +158,7 @@ public class ApplicationServerTest {
 
   @Test
   public void file_test_compression_return_200_OK() throws IOException {
-    URL url =
-        new URL(SERVER_URL + "/file?path=src/test/resources/files/parent/dir/large.pdf");
+    URL url = new URL(SERVER_URL + "/file?path=src/test/resources/files/parent/dir/large.pdf");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestProperty("Accept-Encoding", "gzip");
     connection.connect();
@@ -175,8 +175,7 @@ public class ApplicationServerTest {
 
   @Test
   public void file_test_wrong_compression_return_400_BAD_REQUEST() throws IOException {
-    URL url =
-        new URL(SERVER_URL + "/file?path=src/test/resources/files/parent/dir/large.pdf");
+    URL url = new URL(SERVER_URL + "/file?path=src/test/resources/files/parent/dir/large.pdf");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestProperty("Accept-Encoding", "xxx");
     connection.connect();
