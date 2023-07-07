@@ -5,11 +5,14 @@ import src.main.java.com.zextras.httpserver.http.handler.exception.HttpException
 import src.main.java.com.zextras.httpserver.http.handler.request.HttpRequestHandlerFactory;
 
 public class HttpConnectionHandlerFactory {
-    private HttpConnectionHandlerFactory() {
-        throw new UnsupportedOperationException();
-    }
+  private HttpConnectionHandlerFactory() {
+    throw new UnsupportedOperationException();
+  }
 
-    public static HttpConnectionHandler getHttpConnectionHandler() {
-        return new HttpConnectionHandler(new HttpRequestHandlerFactory(), new HttpExceptionHandlerFactory(), new HttpContentCompressorFactory());
-    }
+  public static HttpConnectionHandler getHttpConnectionHandler() {
+    return new HttpConnectionHandler(
+        new HttpRequestHandlerFactory(),
+        new HttpExceptionHandlerFactory(),
+        new HttpContentCompressorFactory());
+  }
 }

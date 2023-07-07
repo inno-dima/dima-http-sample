@@ -6,19 +6,19 @@ import src.main.java.com.zextras.httpserver.http.handler.request.HttpRequestHand
 
 public class FileRequestHandler implements HttpRequestHandler {
 
-    private final FileHandlingService fileHandlingService;
+  private final FileHandlingService fileHandlingService;
 
-    public FileRequestHandler() {
-        this.fileHandlingService = new FileHandlingService();
-    }
+  public FileRequestHandler() {
+    this.fileHandlingService = new FileHandlingService();
+  }
 
-    @Override
-    public HttpResponse handleRequest(HttpRequest request) {
-        return fileHandlingService.handleRequest(request.getUri());
-    }
+  @Override
+  public HttpResponse handleRequest(HttpRequest request) {
+    return fileHandlingService.handleRequest(request.getUri());
+  }
 
-    @Override
-    public boolean isRequestSupported(HttpRequest request) {
-        return request.getUri().startsWith("/file");
-    }
+  @Override
+  public boolean isRequestSupported(HttpRequest request) {
+    return request.getUri().startsWith("/file");
+  }
 }
